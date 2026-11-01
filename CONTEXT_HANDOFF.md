@@ -12,7 +12,7 @@ Source of truth: `CLAUDE.md` (rules), `PLAN.md`, `DECISIONS.md`, `TESTS.md` in t
 - **Last owner request (2026-11-01 20:26):** "start the implementation from the 1st point" of the review's recommended order = **re-sync the docs** (this file, README, PLAN status/§5, requirements comments). Done at 20:40. Then (20:49) owner: "Skip 2, 3, 4, 5. Continue from the 6th point" → NLLB short-input guard done 21:00. 20:59 owner: "Skip point 7, I tested them myself" (no numbers given) → point 8 eval sets + FLEURS baseline done 21:35. 21:35 owner "yea" → point 9: approved leftovers deleted (~4.6 GB) + requirements pinned, done 21:45. **Open: owner to decide on the test-only folders (~6.6 GB, §3 Models); all 9 review points are now done or skipped by the owner.**
 - **Owner feedback:** the 8 s solo-phrase version "gives better results; text appears within 5 s after the voice ends". Armenian ASR accuracy is still the main complaint.
 - **Owner said "Don't change anything for now" (19:33)** about the ASR options list; then asked for the review (20:19) and point 1 (20:26). Ask before starting each next point.
-- **WARNING — parallel sessions:** on 2026-11-01 another Claude session edited the same files at the same time (18:55–19:04: ASR context, `context_check.py`; 17:34: `bench_phrase_len.py`). Before editing, check file modification times (`find . -newermt ...`) and re-read files you change. Run one session at a time.
+- **Correction (2026-11-01 22:56, owner confirmed):** there were only 3 sessions and never a parallel one. The ASR context work (18:55–19:04, `context_check.py`) and `bench_phrase_len.py` (17:34) were done in session 3 itself; after a context compaction Claude misattributed them to "another session". The full transcripts are in `chats/`.
 
 ---
 
@@ -46,7 +46,7 @@ Source of truth: `CLAUDE.md` (rules), `PLAN.md`, `DECISIONS.md`, `TESTS.md` in t
 | pytest | [measured] 2026-11-01 21:00: **75 passed, 1 skipped** (`$env:PYTHONIOENCODING="utf-8"` is required; without it 2 export_clips tests fail on cp1252) |
 | Mic + loopback capture, VAD, ASR, MT, timing log, replay | all live/replay runs 0 over 5 s |
 | ASR = NVIDIA FastConformer-Hybrid Large hy, **RNNT** branch (owner switched 11-01) | `--asr ctc` for A/B |
-| **ASR context after a forced cut** (other session, 18:57, default ON, `--asr-context-s 1.5`) | offline A/B on 22 phrases: better 11, same 7, mixed 2, unclear 2, worse 0 (Claude's judgement, no refs) |
+| **ASR context after a forced cut** (session 3, 18:57, default ON, `--asr-context-s 1.5`) | offline A/B on 22 phrases: better 11, same 7, mixed 2, unclear 2, worse 0 (Claude's judgement, no refs) |
 | **8 s solo phrases** (this session, 17:44, default ON, `--max-phrase-solo-s 8`) | stress 4.43 s, single 2.96 s, adversarial 2.44 s, real-call replay 2.82 s; plain 8 s cap failed (6.02 s) |
 | Translation NLLB-200 1.3B CT2 int8, beam 4 | chrF 89.0 / 80.1 on 8 sentences; owner said keep as is |
 | Speaker labels (WeSpeaker ResNet34-LM, online centroids, Me auto-learn, bleed rule) | works on synthetic voices; **over-splits on real calls** |
@@ -164,7 +164,7 @@ Full option table: README.md.
 10. **Speaker thresholds not changed until truth labels exist** (same voice 0.32–0.59, different voices up to ~0.4–0.5 on rec-115207).
 11. **Smarter cuts (11-01), all opt-in, NOT adopted:** adaptive pause (no effect: the reader never pauses 120–600 ms), smart cut vad/energy, ASR word-boundary cut (`--smart-cut asr`, +0.14–0.17 s per cut). Across 2 recordings: current 9 cuts / 3 word splits vs asr 10 / 2–3: a tie. Clean word cuts still split sentences.
 13. **NLLB short-input guard (11-01 21:00, owner: point 6):** fixed English for 18 common replies; `(unclear)` for ≤ 2-word lines with NLLB score < −0.9; `--no-mt-short-guard` = off. Invented short lines ≈ 18 → 6 of 58 (Claude's judgement, threshold tuned on the same data).
-12. **ASR context after a forced cut (other session, 11-01, owner chose option 1):** adopted as default, 1.5 s; rule: a word is new if its first token starts ≥ join − 0 s or its last token ≥ join + 0.08 s; first letter capitalised. ASR time 0.06–0.33 s with context.
+12. **ASR context after a forced cut (session 3, 11-01, owner chose option 1):** adopted as default, 1.5 s; rule: a word is new if its first token starts ≥ join − 0 s or its last token ≥ join + 0.08 s; first letter capitalised. ASR time 0.06–0.33 s with context.
 
 ---
 
@@ -183,7 +183,7 @@ Full option table: README.md.
 | NLLB 1-word hallucination | mostly fixed 21:00 (guard); confident inventions like "Oh, my God." remain |
 | Same-stream speaker turn without a pause becomes one line with one label (8.2 s line on rec-124830) | VAD can't see it at any cap |
 
-**ASR improvement options given to the owner (18:36), ordered cheap → big:** 0 test set (owner corrects refs.tsv) — prerequisite; 1 ASR context — **done by the other session**; 2 correction list for known errors/names; 3 CTC + small conversational LM with hotwords (plausible wrong words risk, RAM/KenLM issue); 4 audio input (headset, gain; noise suppression may hurt); 5 fine-tune FastConformer on conversational Armenian (GPU, hours of transcribed data, export pipeline exists); 6 other models (none fit); 7 local LLM correction (not recommended).
+**ASR improvement options given to the owner (18:36), ordered cheap → big:** 0 test set (owner corrects refs.tsv) — prerequisite; 1 ASR context — **done (session 3)**; 2 correction list for known errors/names; 3 CTC + small conversational LM with hotwords (plausible wrong words risk, RAM/KenLM issue); 4 audio input (headset, gain; noise suppression may hurt); 5 fine-tune FastConformer on conversational Armenian (GPU, hours of transcribed data, export pipeline exists); 6 other models (none fit); 7 local LLM correction (not recommended).
 
 **Resolved along the way (history):** stale commits to laptop (old workspace sync), base64 corruption, benchmark imported removed OpusMT, tune_speakers no-truth mode, pyctcdecode "▁", ARPA check like-for-like, numpy float in timing JSON (energy cut, fixed 11-01), PYTHONIOENCODING needed for 2 tests.
 
