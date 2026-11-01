@@ -1,0 +1,39 @@
+# Python / tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.venv-export/
+*.egg-info/
+
+# Never commit: model weights, audio, recordings, logs, local results
+models/
+recordings/
+logs/
+results/
+*.wav
+*.flac
+*.mp3
+*.onnx
+*.bin
+*.arpa
+*.arpa.gz
+*.tar.gz
+*.parquet
+*.part*
+
+# Generated evaluation sets (rebuild: python scripts/make_eval_sets.py)
+eval/fleurs_hy/
+eval/clips/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Local-only: exported chat transcripts, scratch folders
+_tmp_export/
+_to_delete/
+*.log

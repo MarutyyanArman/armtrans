@@ -1,0 +1,17 @@
+# Runtime. No PyTorch, no NeMo, no faster-whisper.
+# Pinned 2026-11-01 to the versions installed on the laptop (Windows 11, Python 3.12.4) that pass
+# `python -m pytest -q` (75 passed, 1 skipped). Change a pin only after re-running the tests.
+# Test-only extra, installed separately: pip install pyctcdecode==0.5.0 --no-deps (scripts/bench_lm.py).
+onnx-asr==0.12.0
+onnxruntime==1.31.1
+ctranslate2==4.8.4
+sounddevice==0.5.6
+soundfile==0.14.0
+soxr==1.1.0
+sentencepiece==0.2.2
+numpy==2.5.4
+sacrebleu==2.6.0
+huggingface_hub==2.4.0   # model download (scripts/download_models.py) and scripts/make_eval_sets.py
+onnx==1.23.2             # tests only (builds stand-in models)
+PyAudioWPatch==0.2.12.9; sys_platform == "win32"   # system-audio loopback capture
+pytest==9.2.0

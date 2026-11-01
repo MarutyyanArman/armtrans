@@ -1,0 +1,4 @@
+# Only for `python scripts/download_models.py --mt` (one-time NLLB-200 1.3B -> CTranslate2 conversion).
+# Install PyTorch CPU build first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+transformers==5.22.1   # with torch 2.15.0+cpu; versions on the laptop 2026-11-01
